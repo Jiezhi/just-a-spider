@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*- 
 """
 Created on 5/8/16
 
 @author: 'Jiezhi.G@gmail.com'
+
+
+To get the latest code, please visit my github: https://github.com/Jiezhi/just-a-spider
 
 Reference: 
 """
@@ -47,5 +49,6 @@ def get_content_from_url(url):
 
 
 if __name__ == '__main__':
+    # TODO get list from this page: http://cn163.net/archives/
     first_url = 'http://cn163.net/archives/58/'
     get_content_from_url(first_url)
