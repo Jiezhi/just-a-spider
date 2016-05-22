@@ -42,7 +42,7 @@ def download_file(url):
     if os.path.exists(local_filename):
         print('file already downloaded: ', local_filename)
         return local_filename
-    print('downloading %s ---> %s' % (url, local_filename))
+    print('downloading ', url)
     # NOTE the stream=True parameter
     r = requests.get(url, stream=True)
     with open(local_filename, 'wb') as f:
@@ -53,27 +53,29 @@ def download_file(url):
     return local_filename
 
 
-def get_free_book(html):
+def get_free_book(content, key, file_format='pdf'):
     """
     Parse free book information from html content
-    :param html: the content of what your get from oreily free book web page
+    :param content: the content of what your get from oreily free book web page
+    :param key
+    :param file_format epub mobi or pdf
     :return:
     """
-    soup = BeautifulSoup(html, 'lxml')
+    soup = BeautifulSoup(content, 'lxml')
     # books = soup.find_all('div', {'class': 'product-row cover-showcase'})
     # TODO handle error
     books = soup.find_all('a', {'data-toggle': 'popover'})
-    print('Find %d book(s)...', len(books))
+    print('Find %d book(s)...' % len(books))
     for book in books:
         href = book['href']
-        if not href or 'player.oreilly.com' in href:
-            print("it's a video page, igored: ", href)
+        if not href or 'player.oreilly.com' in href or not '.csp' in href:
+            print("this page will be igored: ", href)
             continue
         book_name = get_keyword(href, 'free/', '.csp')
-        book_url = 'http://www.oreilly.com/programming/free/files/%s.pdf' % book_name
+        book_url = 'http://www.oreilly.com/%s/free/files/%s.%s' % (key, book_name, file_format)
         download_file(book_url)
-        book_url = 'http://www.oreilly.com/programming/free/files/%s.mobi' % book_name
-        download_file(book_url)
+        # book_url = 'http://www.oreilly.com/programming/free/files/%s.mobi' % book_name
+        # download_file(book_url)
 
 
 if __name__ == '__main__':
@@ -87,5 +89,6 @@ if __name__ == '__main__':
                     'http://www.oreilly.com/webops-perf/free/',
                     ]
     for free in free_oreilly:
+        dir_keyword = free.split('/')[-3]
         html = requests.get(free)
-        get_free_book(html.content)
+        get_free_book(html.content, dir_keyword)
