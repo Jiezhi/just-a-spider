@@ -35,7 +35,10 @@ def download_file(url):
     :return: The downloaded file name
     """
     local_filename = url.split('/')[-1]
-    local_filename = os.path.join('oreilly', local_filename)
+    dir_name = 'oreilly' + os.path.sep + url.split('/')[-4]
+    if not os.path.exists(dir_name):
+        os.makedirs(dir_name)
+    local_filename = os.path.join(dir_name, local_filename)
     if os.path.exists(local_filename):
         print('file already downloaded: ', local_filename)
         return local_filename
@@ -62,13 +65,27 @@ def get_free_book(html):
     books = soup.find_all('a', {'data-toggle': 'popover'})
     print('Find %d book(s)...', len(books))
     for book in books:
-        book_name = get_keyword(book['href'], 'free/', '.csp')
+        href = book['href']
+        if not href or 'player.oreilly.com' in href:
+            print("it's a video page, igored: ", href)
+            continue
+        book_name = get_keyword(href, 'free/', '.csp')
         book_url = 'http://www.oreilly.com/programming/free/files/%s.pdf' % book_name
-        print(book_url)
+        download_file(book_url)
+        book_url = 'http://www.oreilly.com/programming/free/files/%s.mobi' % book_name
         download_file(book_url)
 
 
 if __name__ == '__main__':
-    free_oreilly = 'http://www.oreilly.com/programming/free/'
-    html = requests.get(free_oreilly)
-    get_free_book(html)
+    free_oreilly = ['http://www.oreilly.com/programming/free/',
+                    'http://www.oreilly.com/web-platform/free/',
+                    'http://www.oreilly.com/security/free/',
+                    'http://www.oreilly.com/business/free/',
+                    'http://www.oreilly.com/data/free/',
+                    'http://www.oreilly.com/iot/free/',
+                    'http://www.oreilly.com/design/free/',
+                    'http://www.oreilly.com/webops-perf/free/',
+                    ]
+    for free in free_oreilly:
+        html = requests.get(free)
+        get_free_book(html.content)
