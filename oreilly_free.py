@@ -22,7 +22,7 @@ def get_keyword(url):
     Return catelog and book
     """
     # TODO error handler
-    reg=r"http://www\.oreilly\.com/([a-z]+)/free/([^.]+)\.csp.*"
+    reg=r"http://www\.oreilly\.com/([^/]+)/free/([^.]+)\.csp.*"
     m = re.match(reg,url)
     return m.groups()
 
@@ -75,8 +75,8 @@ def get_free_book(content, file_format='pdf'):
             book_url = 'http://www.oreilly.com/%s/free/files/%s.%s' % (catelog, book_name, file_format)
             t = threading.Thread(target=download_file,args=(book_url,))
             t.start()
-        except Exception:
-            print("Downloading from {} failed".format(href))
+        except Exception as e:
+            print("Downloading from {} failed".format(href),e)
 
 
 if __name__ == '__main__':
