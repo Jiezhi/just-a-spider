@@ -70,10 +70,13 @@ def get_free_book(content, file_format='pdf'):
         if not href or 'player.oreilly.com' in href or not '.csp' in href:
             print("this page will be igored: ", href)
             continue
-        catelog,book_name = get_keyword(href)
-        book_url = 'http://www.oreilly.com/%s/free/files/%s.%s' % (catelog, book_name, file_format)
-        t = threading.Thread(target=download_file,args=(book_url,))
-        t.start()
+        try:
+            catelog,book_name = get_keyword(href)
+            book_url = 'http://www.oreilly.com/%s/free/files/%s.%s' % (catelog, book_name, file_format)
+            t = threading.Thread(target=download_file,args=(book_url,))
+            t.start()
+        except Exception:
+            print("Downloading from {} failed".format(href))
 
 
 if __name__ == '__main__':
