@@ -13,6 +13,7 @@ Reference:
 import os
 import requests
 from bs4 import BeautifulSoup
+import threading
 
 
 def get_keyword(text, start, end):
@@ -73,7 +74,10 @@ def get_free_book(content, key, file_format='pdf'):
             continue
         book_name = get_keyword(href, 'free/', '.csp')
         book_url = 'http://www.oreilly.com/%s/free/files/%s.%s' % (key, book_name, file_format)
-        download_file(book_url)
+        t = threading.Thread(target=download_file,args=(book_url,))
+        t.start()
+        t.join()
+        # download_file(book_url)
         # book_url = 'http://www.oreilly.com/programming/free/files/%s.mobi' % book_name
         # download_file(book_url)
 
