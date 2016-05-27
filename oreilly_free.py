@@ -14,18 +14,17 @@ import os
 import requests
 from bs4 import BeautifulSoup
 import threading
+import re
 
 
-def get_keyword(text, start, end):
+def get_keyword(url):
     """
-    Just get target keyword
-    :param text:
-    :param start:
-    :param end:
-    :return:
+    Return catelog and book
     """
     # TODO error handler
-    return text.split(end)[0].split(start)[1]
+    reg=r"http://www\.oreilly\.com/([a-z]+)/free/([^.]+)\.csp.*"
+    m = re.match(reg,url)
+    return m.groups()
 
 
 def download_file(url):
@@ -54,11 +53,10 @@ def download_file(url):
     return local_filename
 
 
-def get_free_book(content, key, file_format='pdf'):
+def get_free_book(content, file_format='pdf'):
     """
     Parse free book information from html content
     :param content: the content of what your get from oreily free book web page
-    :param key
     :param file_format epub mobi or pdf
     :return:
     """
@@ -72,14 +70,10 @@ def get_free_book(content, key, file_format='pdf'):
         if not href or 'player.oreilly.com' in href or not '.csp' in href:
             print("this page will be igored: ", href)
             continue
-        book_name = get_keyword(href, 'free/', '.csp')
-        book_url = 'http://www.oreilly.com/%s/free/files/%s.%s' % (key, book_name, file_format)
+        catelog,book_name = get_keyword(href)
+        book_url = 'http://www.oreilly.com/%s/free/files/%s.%s' % (catelog, book_name, file_format)
         t = threading.Thread(target=download_file,args=(book_url,))
         t.start()
-        t.join()
-        # download_file(book_url)
-        # book_url = 'http://www.oreilly.com/programming/free/files/%s.mobi' % book_name
-        # download_file(book_url)
 
 
 if __name__ == '__main__':
@@ -93,6 +87,5 @@ if __name__ == '__main__':
                     'http://www.oreilly.com/webops-perf/free/',
                     ]
     for free in free_oreilly:
-        dir_keyword = free.split('/')[-3]
         html = requests.get(free)
-        get_free_book(html.content, dir_keyword)
+        get_free_book(html.content)
