@@ -39,4 +39,4 @@ def get_book(path):
 
 
 if __name__ == '__main__':
-    get_book('/Users/jiezhi/tmp/packt.html')
+    get_book('~/tmp/packt.html')
