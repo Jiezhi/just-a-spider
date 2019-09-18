@@ -45,10 +45,11 @@ def get_content_from_url(url):
         print('it seems no more url to get')
         exit(0)
     time.sleep(5)
-    get_content_from_url(next_url)
+    # get_content_from_url(next_url)
 
 
 if __name__ == '__main__':
     # TODO get list from this page: http://cn163.net/archives/
     first_url = 'http://cn163.net/archives/58/'
+    first_url = 'http://cn163.net/archives/1316/'
     get_content_from_url(first_url)
